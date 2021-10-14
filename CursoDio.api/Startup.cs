@@ -1,6 +1,11 @@
+using CursoDio.api.Business.Repositories;
+using CursoDio.api.Configurations;
+using CursoDio.api.Infraestruture.Data;
+using CursoDio.api.Infraestruture.Data.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -77,6 +82,14 @@ namespace CursoDio.api
 
                     };
                 });
+            
+            services.AddDbContext<CursoDbContext>(options => {
+                options.UseSqlServer(Configuration.GetConnectionString("DefautConnection"));
+                
+            });
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<ICursoRepository, CursoRepository>();
+            services.AddScoped<IAuthenticationService, JwtService>();
         }
 
 
