@@ -1,21 +1,11 @@
-﻿using CursoDio.api.Filters;
+﻿using CursoDio.api.Business.Entities;
+using CursoDio.api.Business.Repositories;
+using CursoDio.api.Configurations;
+using CursoDio.api.Filters;
 using CursoDio.api.Models;
 using CursoDio.api.Models.Usuarios;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Annotations;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using CursoDio.api.Infraestruture.Data;
-using Microsoft.EntityFrameworkCore;
-using CursoDio.api.Business.Entities;
-using System.Linq;
-using CursoDio.api.Business.Repositories;
-using CursoDio.api.Infraestruture.Data.Repositories;
-using Microsoft.Extensions.Configuration;
-using CursoDio.api.Configurations;
 
 namespace CursoDio.api.Controllers
 {
@@ -55,10 +45,10 @@ namespace CursoDio.api.Controllers
                 return BadRequest("Houve um erro ao tentar acessar.");
             }
 
-            //if(usuario.Senha != loginViewModel.Senha.GerarSenhaCriptografada())
-            //{
-            //    return BadRequest("Houve um erro ao tentar acessar.")
-            //}
+            if (usuario.Senha != loginViewModelInput.Senha)
+            {
+                return BadRequest("Usuário ou senha inválido");
+            }
             var usuarioViewModelOutput = new UsuarioViewModelOutput()
             {
                 Codigo = usuario.Codigo,

@@ -34,6 +34,7 @@ namespace CursoDio.web.mvc.Controllers
             {
                 var usuario = await _usuarioService.Registrar(registrarUsuarioViewModelInput);
                 ModelState.AddModelError("", $"Os dados foram cadastrados com sucesso para o login {usuario.Login}");
+                
             }
             catch (ApiException ex)
             {
@@ -74,7 +75,8 @@ namespace CursoDio.web.mvc.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentify), authProperties);
 
 
-                ModelState.AddModelError("", $"O usuário esta autenticado {usuario.Token}");
+                ModelState.AddModelError("", "O usuário esta autenticado");
+                return RedirectToAction("Index", "Home");
             }
             catch (ApiException ex)
             {
@@ -85,6 +87,11 @@ namespace CursoDio.web.mvc.Controllers
                 ModelState.AddModelError("", ex.Message);
             }
             return View();
+        }
+
+        private object Listar()
+        {
+            throw new NotImplementedException();
         }
 
         public IActionResult EfetuarLogout()
