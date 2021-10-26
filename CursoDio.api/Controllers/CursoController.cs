@@ -13,7 +13,7 @@ namespace CursoDio.api.Controllers
 {
     [ApiController]
     [Route("api/v1/cursos")]
-    [Authorize ]
+    [Authorize]
     public class CursoController : Controller
     {
         private readonly ICursoRepository _cursoRepository;
@@ -34,14 +34,25 @@ namespace CursoDio.api.Controllers
         [Route("")]
         public async Task<IActionResult> Post(CursoViewModelInput cursoViewModelInput)
         {
-            Curso curso = new Curso();
-            curso.Nome = cursoViewModelInput.Nome;
-            curso.Descricao = cursoViewModelInput.Descricao;
+            Curso curso = new Curso
+            {
+                Nome = cursoViewModelInput.Nome,
+                Descricao = cursoViewModelInput.Descricao
+            };
+
             var codigoUsuario = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
             curso.CodigoUsuario = codigoUsuario;
             _cursoRepository.Adicionar(curso);
             _cursoRepository.Commit();
-            return Created("", cursoViewModelInput);
+
+            var cursoViewModelOutput = new CursoViewModelOutput
+            {
+                Nome = curso.Nome,
+                Descricao = curso.Descricao
+            };
+
+            return Created("", cursoViewModelOutput);
+
         }
 
         /// <summary>
@@ -54,17 +65,17 @@ namespace CursoDio.api.Controllers
         [Route("")]
         public async Task<IActionResult> Get()
         {
-            
+
 
             var codigoUsuario = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
             var cursos = _cursoRepository.ObterPorUsuario(codigoUsuario)
                 .Select(s => new CursoViewModelOutput()
                 {
                     Nome = s.Nome,
-                    Descricao=s.Descricao,
+                    Descricao = s.Descricao,
                     Login = s.Usuario.Login
-                }); 
-            
+                });
+
             return Ok(cursos);
         }
     }

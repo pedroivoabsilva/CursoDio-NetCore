@@ -6,6 +6,7 @@ using CursoDio.api.Models;
 using CursoDio.api.Models.Usuarios;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Threading.Tasks;
 
 namespace CursoDio.api.Controllers
 {
@@ -17,7 +18,7 @@ namespace CursoDio.api.Controllers
         private readonly IAuthenticationService _authenticationService;
 
         public UsuarioController(
-            IUsuarioRepository usuarioRepository, 
+            IUsuarioRepository usuarioRepository,
             IAuthenticationService authenticationService)
         {
             _usuarioRepository = usuarioRepository;
@@ -30,17 +31,17 @@ namespace CursoDio.api.Controllers
         /// </summary>
         /// <param name="loginViewModelInput"></param>
         /// <returns>Retorna status ok, dados do usuário e token em caso de uso</returns>
-        [SwaggerResponse(statusCode: 200, description:"Sucesso ao autenticar",type:typeof(LoginViewModelInput))]
-        [SwaggerResponse(statusCode: 400, description:"Campos obrigatórios",type:typeof(ValidaCampoViewModelOutput))]
-        [SwaggerResponse(statusCode: 500, description:"Erro interno",type:typeof(ErroGenericoViewModel))]
+        [SwaggerResponse(statusCode: 200, description: "Sucesso ao autenticar", type: typeof(usuarioViewModelOutput))]
+        [SwaggerResponse(statusCode: 400, description: "Campos obrigatórios", type: typeof(ValidaCampoViewModelOutput))]
+        [SwaggerResponse(statusCode: 500, description: "Erro interno", type: typeof(ErroGenericoViewModel))]
         [HttpPost]
         [Route("logar")]
         [ValidacaoModelStateCustomizado]
-        public IActionResult Logar(LoginViewModelInput loginViewModelInput)
+        public async Task<IActionResult> Logar(usuarioViewModelOutput loginViewModelInput)
         {
-            var usuario = _usuarioRepository.ObterUsuario(loginViewModelInput.Login);
+            var usuario = await _usuarioRepository.ObterUsuarioAsync(loginViewModelInput.Login);
 
-            if(usuario == null)
+            if (usuario == null)
             {
                 return BadRequest("Houve um erro ao tentar acessar.");
             }
@@ -55,16 +56,16 @@ namespace CursoDio.api.Controllers
                 Login = loginViewModelInput.Login,
                 Email = usuario.Email
             };
-           
+
             var token = _authenticationService.GerarToken(usuarioViewModelOutput);
 
 
-            return Ok(new
+            return Ok(new LoginViemModelOutput
             {
                 Token = token,
                 Usuario = usuarioViewModelOutput
             }
-                ); 
+                );
         }
 
         /// <summary>
@@ -72,15 +73,15 @@ namespace CursoDio.api.Controllers
         /// </summary>
         /// <param name="registroViewModelInput"> View Model de registro de login</param>
         /// <returns></returns>
-        [SwaggerResponse(statusCode: 200, description: "Sucesso ao autenticar", type: typeof(LoginViewModelInput))]
+        [SwaggerResponse(statusCode: 200, description: "Sucesso ao autenticar", type: typeof(usuarioViewModelOutput))]
         [SwaggerResponse(statusCode: 400, description: "Campos obrigatórios", type: typeof(ValidaCampoViewModelOutput))]
         [SwaggerResponse(statusCode: 500, description: "Erro interno", type: typeof(ErroGenericoViewModel))]
         [HttpPost]
         [Route("registrar")]
         [ValidacaoModelStateCustomizado]
-        public IActionResult Registrar(RegistroViewModelInput registroViewModelInput)
+        public async Task<IActionResult> Registrar(RegistroViewModelInput registroViewModelInput)
         {
-            
+
 
             //var migracoesPendentes = context.Database.GetPendingMigrations();
             //if (migracoesPendentes.Count() > 0)
@@ -88,15 +89,22 @@ namespace CursoDio.api.Controllers
             //    context.Database.Migrate();
             //}
 
-            var usuario = new Usuario();
+            var usuario = await _usuarioRepository.ObterUsuarioAsync(registroViewModelInput.Login);
+
+            if (usuario != null) 
+            {
+                return BadRequest("Usuário já cadastrado.");
+            }
+
+            usuario = new Usuario();
             usuario.Login = registroViewModelInput.Login;
             usuario.Senha = registroViewModelInput.Senha;
             usuario.Email = registroViewModelInput.Email;
-           
+
 
             _usuarioRepository.Adicionar(usuario);
             _usuarioRepository.Commit();
-            return Created("",registroViewModelInput);
+            return Created("", registroViewModelInput);
         }
     }
 }

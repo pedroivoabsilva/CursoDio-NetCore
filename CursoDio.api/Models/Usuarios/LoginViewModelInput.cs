@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CursoDio.api.Models.Usuarios
 {
-    public class LoginViewModelInput
+    public class usuarioViewModelOutput
     {
         [Required(ErrorMessage = "O login é obrigatório")]
         public string Login { get; set; }

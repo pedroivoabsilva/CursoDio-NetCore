@@ -10,6 +10,6 @@ namespace CursoDio.api.Business.Repositories
     {
         void Adicionar(Usuario usuario);
         void Commit();
-        Usuario ObterUsuario(string login);
+        Task<Usuario> ObterUsuarioAsync(string login);
     }
 }

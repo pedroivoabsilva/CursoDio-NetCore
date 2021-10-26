@@ -17,7 +17,7 @@
             </summary>
             <returns>Retorna ok e dados do curso do usuário</returns>
         </member>
-        <member name="M:CursoDio.api.Controllers.UsuarioController.Logar(CursoDio.api.Models.Usuarios.LoginViewModelInput)">
+        <member name="M:CursoDio.api.Controllers.UsuarioController.Logar(CursoDio.api.Models.Usuarios.usuarioViewModelOutput)">
             <summary>
             Este serviço pertime autenticar um usuário cadastrado e ativo.
             </summary>

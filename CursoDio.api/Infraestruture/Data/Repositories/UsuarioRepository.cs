@@ -1,5 +1,6 @@
 ﻿using CursoDio.api.Business.Entities;
 using CursoDio.api.Business.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +27,9 @@ namespace CursoDio.api.Infraestruture.Data.Repositories
             _context.SaveChanges();
         }
 
-        public Usuario ObterUsuario(string login)
+        public async Task<Usuario> ObterUsuarioAsync(string login)
         {
-            return _context.usuarios.FirstOrDefault(u => u.Login == login);
+            return await _context.usuarios.FirstOrDefaultAsync(u => u.Login == login);
         }
     }
 }

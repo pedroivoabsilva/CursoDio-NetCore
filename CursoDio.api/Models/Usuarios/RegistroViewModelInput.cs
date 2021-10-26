@@ -11,6 +11,7 @@ namespace CursoDio.api.Models.Usuarios
         [Required(ErrorMessage ="O login é obrigatório")]
         public string Login { get; set; }
         [Required(ErrorMessage = "O E-mail é obrigatório")]
+        [EmailAddress(ErrorMessage ="O email é invalido")]
         public string Email { get; set; }
         [Required(ErrorMessage = "A Senha é obrigatória")]
         public string Senha { get; set; }

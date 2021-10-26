@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace CursoDio.api
@@ -28,6 +30,7 @@ namespace CursoDio.api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
 
             services.AddControllers()
                 .ConfigureApiBehaviorOptions(options =>
@@ -37,6 +40,9 @@ namespace CursoDio.api
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CursoDio.api", Version = "v1" });
+                var basePath = AppDomain.CurrentDomain.BaseDirectory;
+                var fileName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name + ".xml";
+                c.IncludeXmlComments(Path.Combine(basePath, fileName));
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
